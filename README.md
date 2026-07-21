@@ -6,6 +6,7 @@ A full-stack, open-weight AI Image Generation Application powered by **Ideogram 
 
 ## 🚀 Deployed URLs & Live Links
 
+- **Live Frontend Web App**: [https://ideogram-imagegenerator.vercel.app](https://ideogram-imagegenerator.vercel.app)
 - **Live Modal Backend API Endpoint**: `https://divyakadam207--ideogram-v4-generator-ideogramservice-fas-bae4d7.modal.run`
 - **Interactive Swagger API Docs**: `https://divyakadam207--ideogram-v4-generator-ideogramservice-fas-bae4d7.modal.run/docs`
 - **GitHub Repository**: [https://github.com/prchkadam/Ideogram-Image-Generator](https://github.com/prchkadam/Ideogram-Image-Generator)
