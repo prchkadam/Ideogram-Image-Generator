@@ -1,7 +1,7 @@
 import type { PresetRatio } from '../types';
 
 // Deployed Modal API endpoint URL
-export const MODAL_API_URL = "https://uncensored-idk--ideogram-v4-generator-ideogramservice-fa-ce0501.modal.run";
+export const MODAL_API_URL = "https://divyakadam207--ideogram-v4-generator-ideogramservice-fas-bae4d7.modal.run";
 
 export const PRESET_RATIOS: PresetRatio[] = [
   { label: 'Square (1:1)', ratio: '1:1', width: 1024, height: 1024 },

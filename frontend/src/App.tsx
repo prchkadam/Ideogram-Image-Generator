@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const API_URL = "https://uncensored-idk--ideogram-v4-generator-ideogramservice-fa-ce0501.modal.run";
+const API_URL = "https://divyakadam207--ideogram-v4-generator-ideogramservice-fas-bae4d7.modal.run";
 
 export const App: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
@@ -10,11 +10,14 @@ export const App: React.FC = () => {
 
   const handleGenerate = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (loading) return;
     if (!prompt.trim()) return;
 
     setLoading(true);
     setError(null);
     setImage(null);
+
+    const controller = new AbortController();
 
     try {
       const response = await fetch(API_URL, {
@@ -24,7 +27,10 @@ export const App: React.FC = () => {
         },
         body: JSON.stringify({
           prompt: prompt.trim(),
+          height: 512,
+          width: 512,
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -39,6 +45,7 @@ export const App: React.FC = () => {
         throw new Error('Failed to retrieve image from backend response.');
       }
     } catch (err: any) {
+      if (err.name === 'AbortError') return;
       console.error(err);
       setError(err.message || 'An error occurred while generating the image.');
     } finally {
