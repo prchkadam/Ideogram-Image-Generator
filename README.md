@@ -11,6 +11,9 @@ A full-stack, open-weight AI Image Generation Application powered by **Ideogram 
 - **Interactive Swagger API Docs**: `https://divyakadam207--ideogram-v4-generator-ideogramservice-fas-bae4d7.modal.run/docs`
 - **GitHub Repository**: [https://github.com/prchkadam/Ideogram-Image-Generator](https://github.com/prchkadam/Ideogram-Image-Generator)
 
+> [!NOTE]
+> **Generation Latency & Performance**: Full image generation takes **approx. 2 minutes** per request.
+
 ---
 
 ## 🛠️ How to Run Both Parts Locally
