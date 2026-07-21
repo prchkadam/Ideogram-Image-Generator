@@ -94,10 +94,10 @@ with image.imports():
 # ------------------------------------------------------------------------------
 class GenerateRequest(BaseModel):
     """Input payload schema for the image generation endpoint."""
-    prompt: str = Field(..., description="Text prompt describing the image to generate.")
-    height: int = Field(default=1024, description="Target image height in pixels (256-2048, multiple of 16).")
-    width: int = Field(default=1024, description="Target image width in pixels (256-2048, multiple of 16).")
-    num_inference_steps: int | None = Field(default=None, ge=1, le=100, description="Number of diffusion steps. Omit for model defaults.")
+    prompt: str = Field(default="A beautiful mountain landscape at sunrise", description="Text prompt describing the image to generate.")
+    height: int = Field(default=512, description="Target image height in pixels (256-2048, multiple of 16).")
+    width: int = Field(default=512, description="Target image width in pixels (256-2048, multiple of 16).")
+    num_inference_steps: int | None = Field(default=12, ge=1, le=100, description="Number of diffusion steps. Omit for model defaults.")
     guidance_scale: float | None = Field(default=None, ge=1.0, le=20.0, description="Classifier-free guidance scale. Omit to use pipeline defaults.")
     seed: int | None = Field(default=None, description="Optional random seed for reproducibility.")
     prompt_upsampling: bool = Field(default=True, description="Enable local prompt expansion via Ideogram4PromptEnhancerHead.")
@@ -163,9 +163,9 @@ class IdeogramService:
     def _generate_image_impl(
         self,
         prompt: str,
-        height: int = 1024,
-        width: int = 1024,
-        num_inference_steps: int | None = None,
+        height: int = 512,
+        width: int = 512,
+        num_inference_steps: int | None = 12,
         guidance_scale: float | None = None,
         seed: int | None = None,
         prompt_upsampling: bool = True,
@@ -175,11 +175,6 @@ class IdeogramService:
         if seed is not None:
             generator = torch.Generator("cuda").manual_seed(seed)
 
-        logger.info(
-            f"[Generating] Image for prompt: '{prompt[:60]}...' "
-            f"(dim={width}x{height}, steps={num_inference_steps}, guidance={guidance_scale}, upsampling={prompt_upsampling})"
-        )
-
         kwargs = {
             "prompt": prompt,
             "prompt_upsampling": prompt_upsampling,
@@ -187,11 +182,11 @@ class IdeogramService:
             "width": width,
             "generator": generator,
         }
-        # Only pass optional arguments if explicitly provided, matching official pipeline defaults
-        if num_inference_steps is not None:
-            kwargs["num_inference_steps"] = num_inference_steps
+        # Pass guidance_scale if provided; omit num_inference_steps so Ideogram4Pipeline uses default 48-step schedule
         if guidance_scale is not None:
             kwargs["guidance_scale"] = guidance_scale
+
+        logger.info(f"[Inference Execution] Calling self.pipe with resolved kwargs: {kwargs}")
 
         with torch.inference_mode():
             output = self.pipe(**kwargs)
@@ -211,9 +206,9 @@ class IdeogramService:
     def generate_image(
         self,
         prompt: str,
-        height: int = 1024,
-        width: int = 1024,
-        num_inference_steps: int | None = None,
+        height: int = 512,
+        width: int = 512,
+        num_inference_steps: int | None = 12,
         guidance_scale: float | None = None,
         seed: int | None = None,
         prompt_upsampling: bool = True,
@@ -251,7 +246,7 @@ class IdeogramService:
         )
 
         @web_app.post("/")
-        def generate_api(req: GenerateRequest):
+        async def generate_api(req: GenerateRequest):
             try:
                 base64_image = self._generate_image_impl(
                     prompt=req.prompt,
